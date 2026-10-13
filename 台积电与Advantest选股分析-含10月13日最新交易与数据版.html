@@ -1,0 +1,680 @@
+﻿<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>台积电与AMD选股分析</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;900&display=swap">
+<style>
+/* Layout: one reading column (46rem) that widens to 64rem for data tables and the 52-week range chart; Bloomberg terminal keycaps mark the tool behind each step */
+:root {
+  --paper: #f5f7fa;
+  --surface: #ffffff;
+  --ink: #142030;
+  --muted: #586678;
+  --rule: #d8dee7;
+  --amber: #a85f00;
+  --amber-soft: #fdf0dc;
+  --key-bg: #10161e;
+  --key-fg: #ffb547;
+  --up: #0d7a5c;
+  --warn: #9a5c00;
+  --down: #bf3a30;
+  --font-display: "Noto Serif SC", "Songti SC", "SimSun", serif;
+  --font-body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --col-text: 46rem;
+  --col-wide: 64rem;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0d131a;
+    --surface: #141c26;
+    --ink: #e4e9f0;
+    --muted: #97a4b4;
+    --rule: #263140;
+    --amber: #f0a33c;
+    --amber-soft: #2a1f10;
+    --key-bg: #05080c;
+    --key-fg: #ffb547;
+    --up: #3cc39b;
+    --warn: #e5a44c;
+    --down: #f0786d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0d131a;
+  --surface: #141c26;
+  --ink: #e4e9f0;
+  --muted: #97a4b4;
+  --rule: #263140;
+  --amber: #f0a33c;
+  --amber-soft: #2a1f10;
+  --key-bg: #05080c;
+  --key-fg: #ffb547;
+  --up: #3cc39b;
+  --warn: #e5a44c;
+  --down: #f0786d;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.75;
+  padding-inline: 1.25rem;
+  padding-block: 2.5rem 4rem;
+}
+.page { max-width: var(--col-wide); margin-inline: auto; display: grid; gap: 3.5rem; }
+.narrow { max-width: var(--col-text); }
+h1, h2, h3, h4 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.3; }
+h1 { font-size: clamp(1.8rem, 1.2rem + 2.4vw, 2.6rem); font-weight: 900; }
+h2 { font-size: 1.45rem; font-weight: 600; }
+h3 { font-size: 1.05rem; font-weight: 600; }
+h4 { font-size: 1rem; font-weight: 600; }
+p { margin: 0; }
+a { color: var(--amber); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; border-radius: 2px; }
+.mono { font-family: var(--font-mono); }
+.num { font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); }
+.small { font-size: 0.875rem; }
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+kbd {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 500;
+  background: var(--key-bg);
+  color: var(--key-fg);
+  padding: 0.1rem 0.45rem;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.keys { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+/* header */
+header { display: grid; gap: 1.1rem; }
+.lede { font-size: 1.08rem; color: var(--ink); max-width: var(--col-text); }
+.asof { font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); }
+.rules {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.rules div { padding-block: 0.8rem; padding-inline: 0 1rem; display: grid; gap: 0.15rem; min-width: 0; }
+.rules dt { font-size: 0.78rem; color: var(--muted); }
+.rules dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* verdict */
+.verdict {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 1.5rem 1.5rem 1.6rem;
+  display: grid;
+  gap: 1rem;
+}
+.verdict ul { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.55rem; }
+.verdict b { color: var(--ink); }
+.role {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0 0.45rem;
+  border-radius: 3px;
+  background: var(--amber-soft);
+  color: var(--amber);
+  margin-right: 0.35rem;
+  vertical-align: 0.1em;
+}
+
+section { display: grid; gap: 1.2rem; }
+.sec-head { display: grid; gap: 0.35rem; }
+.sec-head p { color: var(--muted); max-width: var(--col-text); }
+
+/* tables */
+.table-wrap { overflow-x: auto; border-top: 2px solid var(--ink); }
+table { width: 100%; border-collapse: collapse; font-size: 0.94rem; }
+th, td { text-align: left; vertical-align: top; padding: 0.75rem 0.9rem 0.75rem 0; border-bottom: 1px solid var(--rule); }
+th { font-weight: 700; font-size: 0.82rem; color: var(--muted); white-space: nowrap; }
+td:first-child { font-weight: 700; white-space: nowrap; }
+.cmp td { min-width: 14rem; }
+.cmp td:first-child { min-width: 5.5rem; }
+.fw td:nth-child(2) { min-width: 16rem; }
+.pf td, .pf th { white-space: nowrap; }
+.pf td:last-child { white-space: normal; min-width: 12rem; }
+.pf .num, .mom .num { text-align: right; }
+.pf tfoot td { font-weight: 700; border-bottom: none; }
+.mom td, .mom th { white-space: nowrap; }
+.mom td:nth-child(2) { color: var(--muted); }
+.mom td.pos { color: var(--up); }
+.mom td.neg { color: var(--down); }
+tr.hl td { background: var(--amber-soft); }
+tr.hl td:first-child { padding-left: 0.6rem; }
+tr.ref td { color: var(--muted); font-style: italic; }
+.arrow { color: var(--amber); font-weight: 700; }
+
+/* special notes list */
+.notes { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.6rem; max-width: var(--col-text); }
+.notes li { display: grid; grid-template-columns: 6.5rem 1fr; gap: 0.8rem; }
+.notes li > span:first-child { font-weight: 700; }
+
+/* stock cards */
+.trio { display: grid; grid-template-columns: repeat(auto-fit, minmax(16.5rem, 1fr)); gap: 1rem; }
+.stock {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 1.1rem 1.2rem;
+  display: grid;
+  gap: 0.8rem;
+  align-content: start;
+  min-width: 0;
+}
+.stock-top { display: flex; justify-content: space-between; align-items: baseline; gap: 0.75rem; flex-wrap: wrap; }
+.stock-top .tk { font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); }
+.stock-tag { font-size: 0.75rem; font-weight: 700; color: var(--amber); }
+.stock-tag.alt { color: var(--muted); }
+.stock-price { font-family: var(--font-mono); font-size: 1.6rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.stock dl { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem 1rem; }
+.stock dl div { display: grid; gap: 0.05rem; min-width: 0; }
+.stock dt { font-size: 0.76rem; color: var(--muted); }
+.stock dd { margin: 0; font-family: var(--font-mono); font-size: 0.92rem; font-variant-numeric: tabular-nums; }
+
+/* range chart */
+.legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1.2rem; font-size: 0.85rem; color: var(--muted); }
+.chip {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  font-size: 0.75rem; font-weight: 700;
+  padding: 0.05rem 0.5rem; border-radius: 999px;
+}
+.chip::before { content: ""; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: currentColor; }
+.chip.up { color: var(--up); background: color-mix(in srgb, var(--up) 13%, transparent); }
+.chip.warn { color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, transparent); }
+.chip.down { color: var(--down); background: color-mix(in srgb, var(--down) 13%, transparent); }
+.range-chart { display: grid; border-top: 2px solid var(--ink); }
+.rg-row {
+  display: grid;
+  grid-template-columns: minmax(9rem, 13rem) 1fr 4.6rem;
+  grid-template-areas: "name track val" "name ends val";
+  column-gap: 1rem;
+  row-gap: 0.15rem;
+  align-items: center;
+  padding-block: 0.6rem;
+  border-bottom: 1px solid var(--rule);
+}
+.rg-name { grid-area: name; display: grid; min-width: 0; line-height: 1.35; }
+.rg-name .nm { font-weight: 700; font-size: 0.92rem; }
+.rg-name .tk { font-family: var(--font-mono); font-size: 0.74rem; color: var(--muted); }
+.rg-track { grid-area: track; position: relative; height: 0.5rem; border-radius: 999px; background: color-mix(in srgb, var(--muted) 18%, transparent); }
+.rg-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; }
+.rg-dot { position: absolute; top: 50%; width: 0.85rem; height: 0.85rem; border-radius: 50%; transform: translate(-50%, -50%); border: 2px solid var(--surface); }
+.rg-ends { grid-area: ends; display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.rg-val { grid-area: val; text-align: right; font-family: var(--font-mono); font-weight: 600; font-variant-numeric: tabular-nums; }
+.rg-row[data-state="up"] .rg-fill { background: color-mix(in srgb, var(--up) 35%, transparent); }
+.rg-row[data-state="up"] .rg-dot { background-color: var(--up); }
+.rg-row[data-state="warn"] .rg-fill { background: color-mix(in srgb, var(--warn) 35%, transparent); }
+.rg-row[data-state="warn"] .rg-dot { background-color: var(--warn); }
+.rg-row[data-state="down"] .rg-fill { background: color-mix(in srgb, var(--down) 30%, transparent); }
+.rg-row[data-state="down"] .rg-dot { background-color: var(--down); }
+.rg-row[data-state="up"] .rg-val { color: var(--up); }
+.rg-row[data-state="warn"] .rg-val { color: var(--warn); }
+.rg-row[data-state="down"] .rg-val { color: var(--down); }
+.rg-row.picked .rg-name .nm::after { content: " ●"; color: var(--amber); font-size: 0.7rem; vertical-align: 0.15em; }
+
+.takeaways { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.5rem; max-width: var(--col-text); }
+
+/* two-column argument */
+.args { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 1.5rem 2rem; }
+.args > div { display: grid; gap: 0.6rem; align-content: start; min-width: 0; }
+.args ul { margin: 0; padding-left: 1.15rem; display: grid; gap: 0.45rem; }
+.args h3 .chip { margin-left: 0.4rem; vertical-align: 0.15em; }
+.action {
+  border-left: 3px solid var(--amber);
+  padding: 0.2rem 0 0.2rem 1rem;
+  max-width: var(--col-text);
+}
+
+/* steps + timeline */
+.plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr)); gap: 2rem 2.5rem; }
+.plans > div { display: grid; gap: 0.8rem; align-content: start; min-width: 0; }
+.steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.9rem; counter-reset: step; }
+.steps li { display: grid; grid-template-columns: 2rem 1fr; gap: 0.7rem; counter-increment: step; }
+.steps li::before {
+  content: counter(step);
+  font-family: var(--font-mono); font-weight: 600;
+  width: 1.8rem; height: 1.8rem; border-radius: 50%;
+  display: grid; place-items: center;
+  border: 1.5px solid var(--amber); color: var(--amber);
+  font-size: 0.85rem;
+}
+.steps ul { margin: 0.3rem 0 0; padding-left: 1.1rem; display: grid; gap: 0.25rem; }
+.timeline { margin: 0; padding: 0; list-style: none; display: grid; gap: 0; border-left: 2px solid var(--rule); margin-left: 0.4rem; max-width: var(--col-text); }
+.timeline li { position: relative; padding: 0 0 1rem 1.3rem; display: grid; grid-template-columns: 4.5rem 1fr; gap: 0.8rem; }
+.timeline li::before { content: ""; position: absolute; left: -0.42rem; top: 0.55rem; width: 0.7rem; height: 0.7rem; border-radius: 50%; background: var(--paper); border: 2px solid var(--muted); }
+.timeline li.key::before { border-color: var(--amber); background: var(--amber); }
+.timeline .d { font-family: var(--font-mono); font-weight: 600; font-variant-numeric: tabular-nums; }
+.timeline .tbc { font-size: 0.75rem; color: var(--muted); }
+
+.risks { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.5rem; max-width: var(--col-text); }
+
+footer { display: grid; gap: 1rem; border-top: 1px solid var(--rule); padding-top: 1.5rem; }
+.sources { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem 2rem; font-size: 0.85rem; }
+.sources h3 { font-family: var(--font-body); font-size: 0.8rem; font-weight: 700; color: var(--muted); margin-bottom: 0.3rem; }
+.sources ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.2rem; }
+.disclaimer { font-size: 0.82rem; color: var(--muted); max-width: var(--col-text); }
+
+@media (max-width: 560px) {
+  body { padding-inline: 1rem; }
+  .rg-row { grid-template-columns: 1fr 4.2rem; grid-template-areas: "name val" "track track" "ends ends"; row-gap: 0.4rem; }
+  .rg-name { display: flex; gap: 0.5rem; align-items: baseline; flex-wrap: wrap; }
+  .notes li { grid-template-columns: 1fr; gap: 0.1rem; }
+  .timeline li { grid-template-columns: 1fr; gap: 0; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rg-dot { transition: transform 0.2s ease; }
+  .rg-row:hover .rg-dot { transform: translate(-50%, -50%) scale(1.25); }
+}
+</style>
+
+<div class="page">
+
+  <header>
+    <span class="eyebrow">2026 Bloomberg Global Trading Challenge</span>
+    <h1>台积电、Advantest 与 AMD 选股分析</h1>
+    <p class="lede">交易员挑股票时看哪几类信息；为什么先买台积电和 Advantest 两只；AMD 等候补股的情况；以及 18 只候选股按 52 周走势筛选的结果。</p>
+    <p class="asof">数据更新至 2026-10-13 盘中（台股约 10:14、日股约 11:06；美股采用最近收盘）· 整理于 2026-10-13 · 行情来源：Bloomberg.com及当日市场报价交叉核对</p>
+    <dl class="rules">
+      <div><dt>本金</dt><dd>$1,000,000</dd></div>
+      <div><dt>交易方式</dt><dd>只做多，无杠杆</dd></div>
+      <div><dt>单只上限</dt><dd>20%（$200k）</dd></div>
+      <div><dt>基准</dt><dd class="mono">WLS Index</dd></div>
+      <div><dt>排名依据</dt><dd>Rel P&amp;L</dd></div>
+      <div><dt>比赛期</dt><dd class="num">10/12 – 11/13</dd></div>
+    </dl>
+  </header>
+
+  <div class="verdict narrow">
+    <span class="eyebrow">结论</span>
+    <ul>
+      <li><span class="role">第一只</span><b>台积电（2330 TT）</b>是压舱石：基本面、技术面、估值三项都好，波动相对小，在 WLS 里权重也大。10/15 财报前先买 10%，财报后再决定第二笔 10%。</li>
+      <li><span class="role">第二只</span><b>Advantest（6857 JP）</b>做半导体测试设备。更新数据仍显示它是原候选池中的强势动能股，但 10/13 盘中回落至约 ¥39,201，较前收 ¥41,610 下跌约 5.8%；10/28 有财报，因此仍按原计划分两笔买，不追高补满。</li>
+      <li><b>只买两只等于 60% 是现金。</b>大盘上涨时现金会拖累相对排名，计划在 10/15 之后逐步加到 80% 以上。候补：AMD、Arista、Lumentum、Hitachi。</li>
+      <li><b>AMD</b> 改为候补：市盈率 169，最近一周跌了 4.1%，短期动能在减弱。11/3 财报前后再看。</li>
+      <li><b>Toyota 和亚洲电力设备股不列入。</b>Toyota 今年约 −15%；韩国电力股 5 月见顶后跌了一半左右，这一类里只有 Hitachi 的趋势还在。</li>
+    </ul>
+  </div>
+
+  <section>
+    <div class="sec-head narrow">
+      <span class="eyebrow">交易记录 · 2026-10-13</span>
+      <h2>10/13 实际成交</h2>
+      <p>根据原定的分批买入计划执行第一笔交易；两笔合计 $198,000，占 $1,000,000 本金的 19.8%，仍低于单只 20% 的仓位上限。</p>
+    </div>
+    <div class="table-wrap">
+      <table class="pf">
+        <thead><tr><th>日期</th><th>股票</th><th>代码</th><th class="num">成交金额</th><th class="num">本金占比</th><th>成交理由与说明</th></tr></thead>
+        <tbody>
+          <tr class="hl">
+            <td class="mono">10/13</td>
+            <td>Advantest</td>
+            <td class="mono">6857 JP</td>
+            <td class="num">$98,000</td>
+            <td class="num">9.8%</td>
+            <td>原计划的第一笔买入。它在候选 AI 股中短期动能最强：1 个月约 +20.7%、3 个月约 +44.0%，且 10/28 有财报催化剂。金额略低于计划中的 $100k，为第二笔加仓和波动留出缓冲；因股价涨幅已大，仍采用分批而不是一次买满。</td>
+          </tr>
+          <tr class="hl">
+            <td class="mono">10/13</td>
+            <td>台积电</td>
+            <td class="mono">2330 TT</td>
+            <td class="num">$100,000</td>
+            <td class="num">10.0%</td>
+            <td>原计划的第一笔买入。台积电是基本面、技术面和估值较均衡的压舱石，在 WLS 中权重大；先建立 10% 仓位，避免完全押注 10/15 财报后的下跌，同时保留财报后根据毛利率、第四季度指引、资本开支和涨价幅度决定第二笔的空间。</td>
+          </tr>
+        </tbody>
+        <tfoot><tr><td colspan="3">当日合计</td><td class="num">$198,000</td><td class="num">19.8%</td><td>剩余现金 $802,000；后续按财报和走势决定是否加仓。</td></tr></tfoot>
+      </table>
+    </div>
+    <p class="action"><b>执行说明：</b>这两笔交易保持原分析的核心组合结构：Advantest 提供短期动能，台积电提供相对稳健的核心仓位。Advantest 的第二笔可等回调或 10/15 台积电财报确认半导体情绪后再考虑；台积电第二笔则在 10/16 评估。</p>
+  </section>
+
+  <section>
+    <div class="sec-head narrow">
+      <h2>交易员选股看的 6 类信息</h2>
+      <p>最后一列是 Bloomberg 终端里对应的功能，出自比赛手册第 18 页的 Investment Management Cycle。</p>
+    </div>
+    <div class="table-wrap">
+      <table class="fw">
+        <thead><tr><th>维度</th><th>看什么</th><th>终端功能</th></tr></thead>
+        <tbody>
+          <tr><td>基本面</td><td>营收和利润增速、利润率、公司指引；分析师在上调还是下调预期</td><td><div class="keys"><kbd>FA &lt;GO&gt;</kbd><kbd>MODL &lt;GO&gt;</kbd></div></td></tr>
+          <tr><td>估值</td><td>市盈率（P/E）、市销率（P/S）、PEG（市盈率除以增速）；和同行比贵不贵</td><td><div class="keys"><kbd>FA &lt;GO&gt;</kbd><kbd>EQS &lt;GO&gt;</kbd></div></td></tr>
+          <tr><td>技术面</td><td>趋势是否持续创新高、离 52 周高点多远、均线、回撤幅度、相对大盘强不强</td><td><div class="keys"><kbd>GP &lt;GO&gt;</kbd></div></td></tr>
+          <tr><td>催化剂</td><td>持有期内有没有财报、新产品、政策事件，会让股价短期大幅波动</td><td><div class="keys"><kbd>N &lt;GO&gt;</kbd></div></td></tr>
+          <tr><td>资金和情绪</td><td>外资流入还是流出、分析师评级、指数调权、市场是否已经过度拥挤</td><td><div class="keys"><kbd>ANR &lt;GO&gt;</kbd><kbd>BI &lt;GO&gt;</kbd></div></td></tr>
+          <tr><td>宏观和主题</td><td>利率、油价、汇率、行业周期；先定方向再挑个股</td><td><div class="keys"><kbd>N &lt;GO&gt;</kbd><kbd>BI &lt;GO&gt;</kbd></div></td></tr>
+          <tr><td>风险管理</td><td>单只仓位上限、几只股票之间的相关性、止损和止盈</td><td><div class="keys"><kbd>TMSG &lt;GO&gt;</kbd><kbd>PORT &lt;GO&gt;</kbd></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="notes">
+      <li><span>只有 5 周</span><span>一年后才兑现的价值投资逻辑赢不了比赛（手册第 17 页）。动量和催化剂的权重最高，估值主要用来判断风险。</span></li>
+      <li><span>相对 WLS 排名</span><span>光赚钱不够，要跑赢指数。现金不涨不跌，大盘上涨时持有现金就等于落后。</span></li>
+      <li><span>单只 ≤20%</span><span>要投满至少需要 5 只，还要看它们是不是同涨同跌。</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="sec-head narrow">
+      <span class="eyebrow">GP &lt;GO&gt; · 短期动能</span>
+      <h2>第二只怎么选出来的：AI 类短期动能排行</h2>
+      <p>按 Bloomberg 日线收盘价计算，1 周、1 个月、3 个月分别对应 5、21、63 个交易日。下表保留原来的筛选逻辑；本次更新行情字段至 10/13 盘中，完整收盘动能数据要等各市场收盘后再确认。</p>
+    </div>
+    <div class="table-wrap">
+      <table class="mom">
+        <thead><tr><th>股票</th><th>类别</th><th class="num">1 周</th><th class="num">1 个月</th><th class="num">3 个月</th><th class="num">离 6 个月高点</th><th>比赛期内的催化剂</th></tr></thead>
+        <tbody>
+          <tr class="hl"><td>Advantest <span class="mono small muted">6857 JP</span></td><td>芯片测试</td><td class="num neg">盘中 −5.8%</td><td class="num pos">+20.7%</td><td class="num pos">+44.0%</td><td class="num">约 −6.6%</td><td>10/28 财报</td></tr>
+          <tr><td>日月光 <span class="mono small muted">3711 TT</span></td><td>封装测试</td><td class="num pos">+4.8%</td><td class="num pos">+19.8%</td><td class="num pos">+19.0%</td><td class="num">0.0%</td><td>10 月底财报 <span class="small muted">日期未官方确认</span></td></tr>
+          <tr><td>AMD <span class="mono small muted">AMD US</span></td><td>CPU 和 GPU</td><td class="num neg">−4.1%</td><td class="num pos">+20.8%</td><td class="num pos">+13.8%</td><td class="num">−6.4%</td><td>11/3 财报</td></tr>
+          <tr><td>Lumentum <span class="mono small muted">LITE US</span></td><td>光模块</td><td class="num pos">+1.7%</td><td class="num pos">+17.9%</td><td class="num pos">+43.6%</td><td class="num">−2.7%</td><td>11/5 财报</td></tr>
+          <tr><td>Arista <span class="mono small muted">ANET US</span></td><td>数据中心网络</td><td class="num pos">+4.5%</td><td class="num pos">+14.7%</td><td class="num pos">+19.6%</td><td class="num">0.0%</td><td>11/3 财报</td></tr>
+          <tr class="ref"><td>台积电 <span class="mono small">2330 TT</span></td><td>代工</td><td class="num neg">盘中 −1.6%</td><td class="num">+3.7%</td><td class="num">+3.4%</td><td class="num">约 −3.5%</td><td>10/15 财报</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted narrow">走弱的几只：SK Hynix、Kioxia 等存储股和 ARM 都已经跌破 20 日均线；Vertiv、Corning 3 个月跌了 14%–21%。</p>
+  </section>
+
+  <section>
+    <div class="sec-head narrow">
+      <h2>用这套框架看三只股票</h2>
+      <p>台积电和 Advantest 先买，AMD 作为候补。</p>
+    </div>
+    <div class="trio">
+      <article class="stock">
+        <div class="stock-top"><h3>台积电</h3><span class="tk">2330 TT Equity</span></div>
+        <span class="stock-tag">第一只 · 压舱石</span>
+        <div class="stock-price">2,500 <span class="small muted">TWD · 10/13 盘中</span></div>
+        <dl>
+          <div><dt>52 周区间</dt><dd>1,375 – 2,590</dd></div>
+          <div><dt>离高点</dt><dd>−3.5%</dd></div>
+          <div><dt>市盈率 / PEGY</dt><dd>29.6 / 0.70</dd></div>
+          <div><dt>今年以来</dt><dd>约 +60%</dd></div>
+          <div><dt>市值</dt><dd>66.1 万亿 TWD</dd></div>
+          <div><dt>下次财报</dt><dd>10/15</dd></div>
+        </dl>
+      </article>
+      <article class="stock">
+        <div class="stock-top"><h3>Advantest</h3><span class="tk">6857 JP Equity</span></div>
+        <span class="stock-tag">第二只 · 动能</span>
+        <div class="stock-price">39,201 <span class="small muted">JPY · 10/13 盘中</span></div>
+        <dl>
+          <div><dt>52 周区间</dt><dd>16,325 – 41,990</dd></div>
+          <div><dt>离高点</dt><dd>−6.6%</dd></div>
+          <div><dt>市盈率 / 市销率</dt><dd>65.7 / 24.5</dd></div>
+          <div><dt>一年回报</dt><dd>+134%</dd></div>
+          <div><dt>市值</dt><dd>30.5 万亿 JPY</dd></div>
+          <div><dt>下次财报</dt><dd>10/28</dd></div>
+        </dl>
+      </article>
+      <article class="stock">
+        <div class="stock-top"><h3>AMD</h3><span class="tk">AMD US Equity</span></div>
+        <span class="stock-tag alt">候补</span>
+        <div class="stock-price">608.10 <span class="small muted">USD · 最近收盘</span></div>
+        <dl>
+          <div><dt>52 周区间</dt><dd>188.22 – 658.52</dd></div>
+          <div><dt>离高点</dt><dd>−7.7%</dd></div>
+          <div><dt>市盈率 / 市销率</dt><dd>168.8 / 24.0</dd></div>
+          <div><dt>一年回报</dt><dd>+183%</dd></div>
+          <div><dt>市值</dt><dd>$993B</dd></div>
+          <div><dt>下次财报</dt><dd>11/3</dd></div>
+        </dl>
+      </article>
+    </div>
+    <div class="table-wrap">
+      <table class="cmp">
+        <thead><tr><th>维度</th><th>台积电</th><th>Advantest</th><th>AMD</th></tr></thead>
+        <tbody>
+          <tr><td>基本面</td><td>第三季度营收 NT$1.49 万亿，同比 +51%，高于预期的 1.46 万亿；折合约 467 亿美元，也高于公司 446–458 亿美元的指引上限</td><td>季度营收从 2,630 亿日元（2025/9 季）增至 3,675 亿日元（2026/6 季），净利润从 796 亿增至 1,748 亿日元，净利率约 48%。7 月把全年营业利润增长预期从 +26% 上调到 +70%，分析师原本预期 +42%</td><td>Lisa Su（10/6）："需求高于供应"，未来几年需求"非常高"，2027 年会大幅扩产；9 月市值突破 1 万亿美元</td></tr>
+          <tr><td>估值</td><td>市盈率 29.6，PEGY 0.70。按增速和股息算，低于 1 说明不贵</td><td>市盈率 65.7，市销率 24.5，偏贵</td><td>市盈率 169，市销率 24。很贵，股价押的是未来的利润</td></tr>
+          <tr><td>技术面</td><td>今年约 +60%，10/13 盘中回到 2,500，较前收 2,540 下跌约 1.6%；仍接近 52 周高点，但离高点距离扩大到约 3.5%</td><td>10/13 盘中约 39,201，较前收 41,610 下跌约 5.8%；从 52 周高点回落约 6.6%，所以原先“涨得太急、分批买”的风险提示仍然适用</td><td>最近收盘 608.10，仍较 52 周高点回落约 7.7%；10/13 美股开盘前报价约 594.24，候补定位不变</td></tr>
+          <tr><td>催化剂</td><td>10/15 财报，比赛第一周</td><td>10/28 财报（东京 15:30），比赛第三周</td><td>11/3 财报，比赛第四周</td></tr>
+          <tr><td>资金和情绪</td><td>资金在从韩国流向台湾。UBS 偏好用台股做 AI；台湾指数上季度跑赢韩国约 23 个百分点</td><td>日经 225 在 10/1 下调了它的权重，被动基金的卖盘在那之前已经卖完；生效当天股价反而大涨</td><td>华尔街认为芯片是押 AI 代理最稳的方式；Meta 的 Muse 带动了市场对 CPU 的追捧</td></tr>
+          <tr><td>主题</td><td>给 Nvidia、AMD、苹果、Broadcom 代工，谁赢都要用它</td><td>检测 Nvidia 等 AI 芯片的缺陷；芯片越复杂，测试需求越大</td><td>处理器加 AI 加速卡；Citi 估计 CPU 市场到 2030 年每年增长 60%</td></tr>
+          <tr><td>主要风险</td><td>涨到高点才进财报，可能利好出尽；苹果削减 iPhone 18 Pro 订单；地缘政治</td><td>不到 4 周涨了 38%，短期过热；估值高；和台积电高度相关</td><td>估值高，财报稍差就会大跌；外部报道称认股权证最多约 20% 摊薄；AI 安全相关的负面新闻</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head narrow">
+      <span class="eyebrow">GP &lt;GO&gt; · 技术面筛选</span>
+      <h2>18 只候选股离 52 周高点多远</h2>
+      <p>每一行是一只股票过去 52 周的价格区间：左端最低价，右端最高价，圆点是最近收盘价。右边的数字是离最高价的距离。橙色圆点标记的是计划先买的两只。</p>
+    </div>
+    <div class="legend">
+      <span class="chip up">趋势还在</span><span>离高点 10% 以内</span>
+      <span class="chip warn">回调中</span><span>10%–30%</span>
+      <span class="chip down">深度回调</span><span>超过 30%</span>
+    </div>
+    <div class="range-chart" id="range-chart" role="list" aria-label="候选股 52 周价格区间"></div>
+    <ul class="takeaways">
+      <li>只有少数几只还在高点附近：Advantest、台积电、Lumentum。动量集中在 AI 芯片和光模块的龙头上。</li>
+      <li>亚洲电力设备股里，HD Hyundai Electric 5 月见顶后跌了 58%，还在创新低；LS Electric −44%，Fujikura −32%，台达电 −24%。只有 Hitachi（−6%）的趋势还完好。</li>
+      <li>AI 周边的中小盘（Fabrinet、Applied Optoelectronics、Coherent、Credo、Astera Labs）大多回调了 30% 以上。</li>
+      <li>冷门股里离高点最近的是奇鋐（AI 散热，−7%）和台光电（AI 服务器基板材料，−7%）。这两只还没读到基本面新闻。</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="sec-head narrow">
+      <h2>候补：AMD 的涨势能不能保持</h2>
+      <p>没人能确定，下面把两边的证据分开列。</p>
+    </div>
+    <div class="args">
+      <div>
+        <h3>支持继续涨<span class="chip up">利多</span></h3>
+        <ul>
+          <li>需求大于供应是 CEO 本人说的，2027 年还要大幅扩产</li>
+          <li>11/3 财报正好在比赛期内</li>
+          <li>动量效应：过去 3–12 个月强势的股票，接下来一段时间往往仍偏强</li>
+          <li>OpenAI 和 Meta 的订单给出了未来几年的收入能见度</li>
+        </ul>
+      </div>
+      <div>
+        <h3>可能转跌<span class="chip down">风险</span></h3>
+        <ul>
+          <li>市盈率 169，市场已经预期了很多，指引不够强就会大跌</li>
+          <li>离高点回落 7.7%；10/13 开盘前报价约 594.24，短期波动仍大</li>
+          <li>10 年期美债收益率 5.24%，高利率对高估值股最不利</li>
+          <li>认股权证可能带来约 20% 的摊薄</li>
+        </ul>
+      </div>
+    </div>
+    <p class="action"><b>操作建议：</b>先不买，等它重新站稳、接近前高再考虑。如果之后买入，在 TMSG 里设好止损（例如 −10%），11/3 财报前再评估一次。</p>
+  </section>
+
+  <section>
+    <div class="sec-head narrow">
+      <h2>分批买入计划</h2>
+      <p>两只都分两笔买：台积电是因为财报前有不确定性，Advantest 是因为短期涨得太急。</p>
+    </div>
+    <div class="plans">
+      <div>
+        <h3>台积电</h3>
+        <p class="small muted">第三季度营收 10/8 已经公布，10/15 真正未知的是毛利率、第四季度指引、2027 年资本开支和涨价幅度。财报会在台北时间 14:00，台股 13:30 已经收盘。</p>
+        <ol class="steps">
+          <li><div><b>10/15 13:30 前买入 10%</b>（约 $100k）。台积电在 WLS 里权重大，完全不买等于押它财报后下跌。</div></li>
+          <li><div><b>10/15 晚上看美股 TSM 的反应</b>，台股要到 10/16 开盘才会反映财报。</div></li>
+          <li><div><b>10/16 决定第二笔 10%</b>
+            <ul>
+              <li>指引好、股价涨：照常加仓</li>
+              <li>指引好、但股价利好出尽下跌：在低位加，成本更低</li>
+              <li>毛利率或资本开支不及预期：不加，这笔钱转去别的股票</li>
+            </ul></div></li>
+        </ol>
+      </div>
+      <div>
+        <h3>Advantest</h3>
+        <p class="small muted">东京交易时间 9:00–15:30（北京时间 8:00–14:30）。10/12 是日本体育节，东京休市，周一下的单要到 10/13 才会成交。</p>
+        <ol class="steps">
+          <li><div><b>10/13 买入第一笔 10%</b>（约 $100k）。</div></li>
+          <li><div><b>补第二笔 10%</b>：股价回调时，或者 10/15 台积电财报确认半导体情绪之后。</div></li>
+          <li><div><b>10/28 财报前再评估</b>：设好止损；涨幅已经很大的话，可以先锁定一部分利润。</div></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head narrow">
+      <h2>仓位方案</h2>
+      <p>每笔下单金额填 $195k 以内，不要顶着 $200k。TMSG 实际扣款不会刚好等于填的数，留一点缓冲可以避免"Maximum Position Size"报错。</p>
+    </div>
+    <div class="table-wrap">
+      <table class="pf">
+        <thead><tr><th>股票</th><th>代码</th><th class="num">第一周</th><th class="num">10/16 起</th><th>角色</th></tr></thead>
+        <tbody>
+          <tr><td>台积电</td><td class="mono">2330 TT</td><td class="num">10%</td><td class="num"><span class="arrow">+10% → </span>20%</td><td>压舱石，AI 代工龙头</td></tr>
+          <tr><td>Advantest</td><td class="mono">6857 JP</td><td class="num">10%</td><td class="num"><span class="arrow">+10% → </span>20%</td><td>动能最强，AI 芯片测试；10/28 财报</td></tr>
+          <tr><td>候补</td><td class="mono">AMD / ANET / LITE / 6501 JP</td><td class="num">0%</td><td class="num">逐步加</td><td>10/15 之后按走势挑 2–3 只，目标总仓位 80% 以上</td></tr>
+          <tr><td>现金</td><td class="mono">—</td><td class="num">80%</td><td class="num">60%</td><td>大盘上涨时会拖累相对排名</td></tr>
+        </tbody>
+        <tfoot><tr><td>合计</td><td></td><td class="num">100%</td><td class="num">100%</td><td></td></tr></tfoot>
+      </table>
+    </div>
+    <p class="small muted narrow">举例：如果 5 周里 WLS 涨 3%，60% 的现金会让组合相对落后约 1.8 个百分点。下单如果出现"Index Membership"报错，说明这个代码不在 WLS 里，改用当地上市的代码（例如用 2330 TT，不用 TSM US）。</p>
+  </section>
+
+  <section>
+    <div class="sec-head narrow">
+      <h2>比赛期内的关键日期</h2>
+    </div>
+    <ol class="timeline">
+      <li><span class="d">10/12</span><span>比赛开始；台股照常交易，东京休市（体育节）</span></li>
+      <li><span class="d">10/13</span><span>Advantest 第一笔成交</span></li>
+      <li class="key"><span class="d">10/15</span><span>台积电第三季度财报（台北 14:00）</span></li>
+      <li class="key"><span class="d">10/16</span><span>台股反映财报，决定台积电第二笔；视情况补 Advantest</span></li>
+      <li><span class="d">10/19</span><span>第一周排行榜公布</span></li>
+      <li class="key"><span class="d">10/28</span><span>Advantest 第二季度财报（东京 15:30）</span></li>
+      <li><span class="d">11/3</span><span>AMD、Arista 财报（候补股，美股收盘后）</span></li>
+      <li><span class="d">11/5</span><span>Lumentum 财报（候补股，美股收盘后）</span></li>
+      <li class="key"><span class="d">11/13</span><span>最后交易日（周五）</span></li>
+      <li><span class="d">11/20</span><span>公布获奖队伍</span></li>
+    </ol>
+  </section>
+
+  <section>
+    <div class="sec-head narrow">
+      <h2>整体风险</h2>
+    </div>
+    <ul class="risks">
+      <li>两只都是半导体，Advantest 测试的芯片很多就是台积电造的。台积电财报不好的话，两只会一起跌。</li>
+      <li>只买两只时 60% 是现金，大盘上涨时相对排名会落后。</li>
+      <li>10 年期美债收益率 5.24%，24 年来最高；美联储上个月刚加息。</li>
+      <li>市场宽度差：标普 500 里只有约三分之一的股票在 50 日均线之上，8 月中这个比例还是 70%。</li>
+      <li>AI 负面消息增多：Nadella 呼吁给 AI 加"紧急刹车"，Nvidia 支持的 Firmus 搁置了估值 300 亿美元的 IPO，Oracle 的 CDS 创新高。</li>
+    </ul>
+  </section>
+
+  <footer>
+    <div class="sources">
+      <div>
+        <h3>Bloomberg 行情页</h3>
+        <ul>
+          <li><a href="https://www.bloomberg.com/quote/2330:TT" target="_blank" rel="noopener">台积电 2330:TT</a></li>
+          <li><a href="https://www.bloomberg.com/quote/6857:JP" target="_blank" rel="noopener">Advantest 6857:JP</a></li>
+          <li><a href="https://www.bloomberg.com/quote/AMD:US" target="_blank" rel="noopener">AMD:US</a></li>
+          <li><a href="https://www.bloomberg.com/quote/LITE:US" target="_blank" rel="noopener">Lumentum LITE:US</a></li>
+          <li><a href="https://www.bloomberg.com/quote/6501:JP" target="_blank" rel="noopener">Hitachi 6501:JP</a></li>
+          <li><a href="https://www.bloomberg.com/quote/3017:TT" target="_blank" rel="noopener">奇鋐 3017:TT</a></li>
+          <li><a href="https://www.bloomberg.com/quote/2383:TT" target="_blank" rel="noopener">台光电 2383:TT</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Bloomberg 报道</h3>
+        <ul>
+          <li><a href="https://www.bloomberg.com/news/articles/2026-10-08/tsmc-s-quarterly-revenue-jumps-51-after-ai-demand-holds-up" target="_blank" rel="noopener">TSMC 季度营收增长 51%</a></li>
+          <li><a href="https://www.bloomberg.com/news/articles/2026-07-29/advantest-lifts-outlook-after-demand-for-ai-chip-testers-soars" target="_blank" rel="noopener">Advantest 上调全年指引</a></li>
+          <li><a href="https://www.bloomberg.com/news/articles/2026-07-31/nikkei-weight-cut-shadow-looms-over-advantest-after-18-rally" target="_blank" rel="noopener">Advantest 的日经调权风险</a></li>
+          <li><a href="https://www.bloomberg.com/news/articles/2026-10-06/amd-ceo-sees-very-high-chip-demand-urges-ai-firms-to-cooperate" target="_blank" rel="noopener">Lisa Su：需求非常高</a></li>
+          <li><a href="https://www.bloomberg.com/news/articles/2026-10-08/ai-hot-potato-is-meta-s-for-now-but-chip-stocks-are-the-winners" target="_blank" rel="noopener">芯片股是 AI 代理的赢家</a></li>
+          <li><a href="https://www.bloomberg.com/news/articles/2026-10-11/once-hot-ai-trade-leaves-korean-stocks-struggling-for-buyers" target="_blank" rel="noopener">韩国 AI 交易降温</a></li>
+          <li><a href="https://www.bloomberg.com/news/articles/2026-10-09/us-stocks-set-to-rebound-as-oil-slips-ai-bubble-fears-recede" target="_blank" rel="noopener">美股收盘总结 10/9</a></li>
+          <li><a href="https://www.bloomberg.com/news/articles/2026-10-09/wall-street-sees-an-ominous-sign-in-bond-market-s-latest-selloff" target="_blank" rel="noopener">美债期限溢价飙升</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>公司公告和其他</h3>
+        <ul>
+          <li><a href="https://investor.tsmc.com/quarterly-results" target="_blank" rel="noopener">TSMC 投资者关系</a></li>
+          <li><a href="https://www.advantest.com/en/news/" target="_blank" rel="noopener">Advantest 新闻页（10/28 财报）</a></li>
+          <li><a href="https://asia.nikkei.com/announcements/nikkei-to-lower-advantest-s-weight-in-nikkei-225" target="_blank" rel="noopener">Nikkei 下调 Advantest 权重公告</a></li>
+          <li><a href="https://ir.amd.com/news-events/press-releases/detail/1300/amd-to-report-fiscal-third-quarter-2026-financial-results" target="_blank" rel="noopener">AMD 财报日期公告</a></li>
+          <li><a href="https://www.arista.com/company/news/press-release/24817-pr-20261006" target="_blank" rel="noopener">Arista 财报日期公告</a></li>
+          <li><a href="https://investor.lumentum.com/financial-news-releases/news-details/2026/Lumentum-Announces-Reporting-Date-for-Fiscal-First-Quarter-2027-Financial-Results/default.aspx" target="_blank" rel="noopener">Lumentum 财报日期公告</a></li>
+          <li><a href="https://beta.earningswhispers.com/go/w/ASX" target="_blank" rel="noopener">日月光财报日期（Earnings Whispers）</a></li>
+          <li><a href="https://www.marketbeat.com/articles/amd-could-double-from-herethanks-to-its-blockbuster-openai-deal/" target="_blank" rel="noopener">MarketBeat：AMD 认股权证</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="disclaimer">本页是 2026 Bloomberg Global Trading Challenge 模拟比赛的研究笔记，用的是虚拟资金，不构成真实投资建议。"今年以来"涨幅是从 Bloomberg 图表上读的近似值；1 周、1 个月、3 个月涨幅按 Bloomberg 日线收盘价计算；其余价格和估值数据取自 Bloomberg.com 行情页。</p>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  // [名称, 代码, 最近收盘, 52周低, 52周高, 是否计划先买]
+  var rows = [
+    ["Advantest", "6857 JP", 39201, 16325, 41990, true],
+    ["台积电", "2330 TT", 2500, 1375, 2590, true],
+    ["Lumentum", "LITE US", 1103.36, 152.54, 1143.00, false],
+    ["Hitachi", "6501 JP", 5669, 4222, 6039, false],
+    ["奇鋐", "3017 TT", 3440, 1083.93, 3700, false],
+    ["台光电", "2383 TT", 6000, 1085, 6470, false],
+    ["AMD", "AMD US", 608.10, 188.22, 658.52, false],
+    ["金像电", "2368 TT", 1285, 388.5, 1580, false],
+    ["台达电", "2308 TT", 1965, 886, 2585, false],
+    ["Toyota", "7203 JP", 2910.5, 2646, 4000, false],
+    ["Credo", "CRDO US", 216.55, 86.49, 308.67, false],
+    ["Astera Labs", "ALAB US", 342.21, 97.89, 499.48, false],
+    ["Coherent", "COHR US", 300.60, 102.14, 440.00, false],
+    ["Fujikura", "5803 JP", 5413, 2610.83, 7933, false],
+    ["Fabrinet", "FN US", 486.28, 366.49, 748.89, false],
+    ["LS Electric", "010120 KS", 195500, 57100, 347500, false],
+    ["Applied Optoelectronics", "AAOI US", 109.64, 18.50, 233.67, false],
+    ["HD Hyundai Electric", "267260 KS", 606000, 538000, 1449000, false]
+  ];
+  function fmt(v) {
+    var d = v < 1000 && v % 1 !== 0 ? 2 : 0;
+    return v.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+  }
+  var host = document.getElementById("range-chart");
+  host.innerHTML = rows.map(function (r) {
+    var off = (r[2] / r[4] - 1) * 100;
+    var pos = Math.max(0, Math.min(100, (r[2] - r[3]) / (r[4] - r[3]) * 100));
+    var state = off >= -10 ? "up" : off >= -30 ? "warn" : "down";
+    var label = (off >= -0.05 ? "0.0" : "−" + Math.abs(off).toFixed(1)) + "%";
+    return '<div class="rg-row' + (r[5] ? " picked" : "") + '" data-state="' + state + '" role="listitem">' +
+      '<div class="rg-name"><span class="nm">' + r[0] + '</span><span class="tk">' + r[1] + '</span></div>' +
+      '<div class="rg-track"><span class="rg-fill" style="width:' + pos.toFixed(1) + '%"></span>' +
+      '<span class="rg-dot" style="left:' + pos.toFixed(1) + '%" title="收盘 ' + fmt(r[2]) + '"></span></div>' +
+      '<div class="rg-ends"><span>' + fmt(r[3]) + '</span><span>' + fmt(r[4]) + '</span></div>' +
+      '<div class="rg-val">' + label + '</div></div>';
+  }).join("");
+})();
+</script>
+
+</body></html>
